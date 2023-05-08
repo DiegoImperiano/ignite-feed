@@ -43,9 +43,23 @@ export function Post({ author, content, publishedAt }) {
   }
 
   function handleNewCommentChange() {
+    event.target.setCustomValidity('') // retorna a validação para o estado inicial
     setNewCommentText(event.target.value)
   }
 
+  function handlesNewCommentInvalid(){
+    event.target.setCustomValidity('Esse campo é orbigatório') // altera o texto da validação do campo textarea
+  }
+
+  function deleteComment(commentToDelete){
+    const commentsWithoutDeletedOne = comments.filter(comment => {
+      return comment !== commentToDelete
+    })
+
+    setComments(commentsWithoutDeletedOne)
+  }
+
+  const isNewcommentEmpty = newCommentText.length === 0;
   return (
     <article className={styles.post}>
       <header>
@@ -85,16 +99,18 @@ export function Post({ author, content, publishedAt }) {
           placeholder="Deixe um comentário"
           value={newCommentText}
           onChange={handleNewCommentChange}
+          onInvalid={handlesNewCommentInvalid}
+          required
         />
 
         <footer>
-          <button type="submit">Publicar</button>
+          <button type="submit" disabled={isNewcommentEmpty}>Publicar</button>
         </footer>
       </form>
 
       <div className={styles.commentList}>
         {comments.map(comment => {
-          return <Comment key={comment} content={comment} />
+          return <Comment key={comment} content={comment} deleteComment={deleteComment} />
         })}
       </div>
     </article>
